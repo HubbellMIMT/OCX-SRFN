@@ -63,9 +63,9 @@ Public Class frmSRFN
 
     Private Function LoadSQLServerName() As String
         Try
-            Dim path As String = Path.Combine(Application.StartupPath, "SQLValues.xml")
+            Dim filePath As String = Path.Combine(Application.StartupPath, "SQLValues.xml")
             Dim doc As New Xml.XmlDocument()
-            doc.Load(path)
+            doc.Load(filePath)
             Dim n = doc.SelectSingleNode("/Data/Database/txtSQLServer")
             If n IsNot Nothing Then
                 SRFN.Communication.CommManager2.SqlServerName = n.InnerText.Trim()
@@ -78,12 +78,12 @@ Public Class frmSRFN
 
     Private Sub SaveSQLServerName(serverName As String)
         Try
-            Dim path As String = Path.Combine(Application.StartupPath, "SQLValues.xml")
+            Dim filePath As String = Path.Combine(Application.StartupPath, "SQLValues.xml")
             Dim xml As String = "<?xml version=""1.0"" encoding=""utf-8""?>" & Environment.NewLine &
                                 "<Data><Database>" & Environment.NewLine &
                                 "  <txtSQLServer>" & serverName & "</txtSQLServer>" & Environment.NewLine &
                                 "</Database></Data>"
-            File.WriteAllText(path, xml, System.Text.Encoding.UTF8)
+            File.WriteAllText(filePath, xml, System.Text.Encoding.UTF8)
         Catch
         End Try
     End Sub
