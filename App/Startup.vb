@@ -21,7 +21,7 @@ Module Startup
 
         If mode = "OCX" Then
             _currentForm = New frmOCX()
-            AddHandler _currentForm.FormClosed, Sub(s, e) Application.Exit()
+            AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
             _currentForm.Show()
         End If
 
@@ -51,7 +51,7 @@ Module Startup
         menu.MenuItems.Add("-")
 
         Dim itemExit As New MenuItem("Exit")
-        AddHandler itemExit.Click, Sub(s, e) Application.Exit()
+        AddHandler itemExit.Click, AddressOf Exit_Click
         menu.MenuItems.Add(itemExit)
 
         _trayIcon.ContextMenu = menu
@@ -86,9 +86,17 @@ Module Startup
 
         If mode = "OCX" Then
             _currentForm = New frmOCX()
-            AddHandler _currentForm.FormClosed, Sub(s, e) Application.Exit()
+            AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
             _currentForm.Show()
         End If
+    End Sub
+
+    Private Sub OnFormClosed(sender As Object, e As FormClosedEventArgs)
+        Application.Exit()
+    End Sub
+
+    Private Sub Exit_Click(sender As Object, e As EventArgs)
+        Application.Exit()
     End Sub
 
     Private Function LoadSQLServerName() As String
