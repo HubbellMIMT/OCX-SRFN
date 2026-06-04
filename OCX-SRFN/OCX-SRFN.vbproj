@@ -115,6 +115,11 @@
     <Compile Include="TWRN\Progress.vb" />
     <Compile Include="TWRN\RunTest.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SerialLibrary\SerialLibrary.vbproj">
