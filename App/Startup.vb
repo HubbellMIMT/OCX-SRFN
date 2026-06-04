@@ -21,9 +21,13 @@ Module Startup
 
         If mode = "OCX" Then
             _currentForm = New frmOCX()
-            AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
-            _currentForm.Show()
+        Else
+            Dim srfn As New frmSRFN()
+            AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
+            _currentForm = srfn
         End If
+        AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
+        _currentForm.Show()
 
         Application.Run()
         _trayIcon.Visible = False
@@ -86,13 +90,22 @@ Module Startup
 
         If mode = "OCX" Then
             _currentForm = New frmOCX()
-            AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
-            _currentForm.Show()
+        Else
+            Dim srfn As New frmSRFN()
+            AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
+            _currentForm = srfn
         End If
+        AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
+        _currentForm.Show()
     End Sub
 
     Private Sub OnFormClosed(sender As Object, e As FormClosedEventArgs)
         Application.Exit()
+    End Sub
+
+    Private Sub OnModeSwitchRequested(newMode As String)
+        ModeSettings.SaveMode(newMode)
+        _currentForm.Close()
     End Sub
 
     Private Sub Exit_Click(sender As Object, e As EventArgs)
