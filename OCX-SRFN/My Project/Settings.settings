@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GenerateDefaultValueInCode="False">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings>
+    <Setting Name="CommandDelay" Type="System.Int32" Scope="Application">
+      <DesignTimeValue Profile="(Default)">500</DesignTimeValue>
+    </Setting>
+  </Settings>
+</SettingsFile>
