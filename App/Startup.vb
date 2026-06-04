@@ -10,14 +10,12 @@ Module Startup
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
 
-        Dim mode As String = ModeSettings.GetMode()
-        If mode = "" Then
-            Using dlg As New frmModeSwitch()
-                If dlg.ShowDialog() <> DialogResult.OK Then Return
-                mode = dlg.SelectedMode
-                ModeSettings.SaveMode(mode)
-            End Using
-        End If
+        Dim mode As String
+        Using dlg As New frmModeSwitch()
+            If dlg.ShowDialog() <> DialogResult.OK Then Return
+            mode = dlg.SelectedMode
+            ModeSettings.SaveMode(mode)
+        End Using
 
         SetupTrayIcon()
         LaunchMode(mode)

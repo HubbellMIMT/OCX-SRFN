@@ -10,44 +10,48 @@ Public Class frmSRFN
     Private txtSetSQL As New TextBox()
     Private btnSetSQL As New Button()
     Private lblSetSQL As New Label()
-    Private lblStatus As New Label()
+    Private lblSQLStatus As New Label()
 
     Public Sub New()
         Text = "SRFN"
         FormBorderStyle = FormBorderStyle.FixedSingle
         StartPosition = FormStartPosition.CenterScreen
         MaximizeBox = False
-        ClientSize = New Size(300, 60)
+        ClientSize = New Size(320, 80)
 
-        lblStatus.Location = New Point(12, 20)
-        lblStatus.Size = New Size(276, 16)
-        lblStatus.ForeColor = Color.DimGray
+        Dim lblTitle As New Label() With {
+            .Text = "SRFN Protocol",
+            .Location = New Point(12, 14),
+            .AutoSize = True,
+            .Font = New Font(Font.FontFamily, 11, FontStyle.Bold)
+        }
 
-        Dim sqlName As String = LoadSQLServerName()
-        lblStatus.Text = If(sqlName = "", "SQL server not configured", "SQL: " & sqlName)
+        lblSQLStatus.Location = New Point(12, 44)
+        lblSQLStatus.Size = New Size(296, 16)
+        lblSQLStatus.ForeColor = Color.DimGray
+        lblSQLStatus.Text = LoadSQLServerName()
 
-        lblSetSQL.Text = "Set SQL:"
-        lblSetSQL.Location = New Point(12, 70)
+        lblSetSQL.Text = "Set SQL Server:"
+        lblSetSQL.Location = New Point(12, 90)
         lblSetSQL.AutoSize = True
         lblSetSQL.Visible = False
 
-        txtSetSQL.Location = New Point(12, 88)
-        txtSetSQL.Width = 194
-        txtSetSQL.UseSystemPasswordChar = True
+        txtSetSQL.Location = New Point(12, 108)
+        txtSetSQL.Width = 212
         txtSetSQL.Visible = False
 
         btnSetSQL.Text = "Set"
-        btnSetSQL.Location = New Point(212, 87)
-        btnSetSQL.Width = 76
+        btnSetSQL.Location = New Point(230, 107)
+        btnSetSQL.Width = 78
         btnSetSQL.Visible = False
         AddHandler btnSetSQL.Click, AddressOf btnSetSQL_Click
 
-        Controls.AddRange({lblStatus, lblSetSQL, txtSetSQL, btnSetSQL})
+        Controls.AddRange({lblTitle, lblSQLStatus, lblSetSQL, txtSetSQL, btnSetSQL})
         AcceptButton = btnSetSQL
     End Sub
 
     Public Sub ShowSQLEntry()
-        ClientSize = New Size(300, 120)
+        ClientSize = New Size(320, 140)
         lblSetSQL.Visible = True
         txtSetSQL.Visible = True
         btnSetSQL.Visible = True
@@ -62,17 +66,21 @@ Public Class frmSRFN
             Case "SRFN"
                 RaiseEvent ModeSwitchRequested("SRFN")
             Case ""
-                ' nothing
+                HideSQLEntry()
             Case Else
                 SRFN.Communication.CommManager2.SqlServerName = entry
                 SaveSQLServerName(entry)
-                lblStatus.Text = "SQL: " & entry
+                lblSQLStatus.Text = "SQL: " & entry
                 txtSetSQL.Clear()
-                ClientSize = New Size(300, 60)
-                lblSetSQL.Visible = False
-                txtSetSQL.Visible = False
-                btnSetSQL.Visible = False
+                HideSQLEntry()
         End Select
+    End Sub
+
+    Private Sub HideSQLEntry()
+        ClientSize = New Size(320, 80)
+        lblSetSQL.Visible = False
+        txtSetSQL.Visible = False
+        btnSetSQL.Visible = False
     End Sub
 
     Private Function LoadSQLServerName() As String
@@ -81,13 +89,13 @@ Public Class frmSRFN
             Dim doc As New Xml.XmlDocument()
             doc.Load(filePath)
             Dim n = doc.SelectSingleNode("/Data/Database/txtSQLServer")
-            If n IsNot Nothing Then
+            If n IsNot Nothing AndAlso n.InnerText.Trim() <> "" Then
                 SRFN.Communication.CommManager2.SqlServerName = n.InnerText.Trim()
-                Return n.InnerText.Trim()
+                Return "SQL: " & n.InnerText.Trim()
             End If
         Catch
         End Try
-        Return ""
+        Return "SQL server not configured"
     End Function
 
     Private Sub SaveSQLServerName(serverName As String)
