@@ -9,12 +9,28 @@ Module Startup
     Sub Main()
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
+
+        ' Prompt for mode if no sticky setting exists
+        Dim mode As String = ModeSettings.GetMode()
+        If mode = "" Then
+            mode = PromptForMode()
+            If mode = "" Then Return  ' user cancelled with no saved mode — exit
+        End If
+
         SetupTrayIcon()
-        LaunchMode(ModeSettings.GetMode())
+        LaunchMode(mode)
         Application.Run()
         _trayIcon.Visible = False
         _trayIcon.Dispose()
     End Sub
+
+    ''' <summary>Shows mode-select dialog; returns saved mode on success or "" on cancel.</summary>
+    Private Function PromptForMode() As String
+        Using dlg As New frmModeSwitch()
+            dlg.ShowDialog()
+        End Using
+        Return ModeSettings.GetMode()
+    End Function
 
     Private Sub SetupTrayIcon()
         _trayIcon = New NotifyIcon()
@@ -35,6 +51,7 @@ Module Startup
 
     Private Sub LaunchMode(mode As String)
         If _currentForm IsNot Nothing Then
+            RemoveHandler _currentForm.FormClosed, AddressOf OnFormClosed
             _currentForm.Close()
             _currentForm.Dispose()
         End If
@@ -48,15 +65,13 @@ Module Startup
     End Sub
 
     Private Sub OnFormClosed(sender As Object, e As FormClosedEventArgs)
-        ' If main form is closed via X, exit the app
         Application.Exit()
     End Sub
 
     Private Sub SwitchMode_Click(sender As Object, e As EventArgs)
         Using dlg As New frmModeSwitch()
             If dlg.ShowDialog() = DialogResult.OK Then
-                Dim newMode As String = ModeSettings.GetMode()
-                LaunchMode(newMode)
+                LaunchMode(ModeSettings.GetMode())
             End If
         End Using
     End Sub
