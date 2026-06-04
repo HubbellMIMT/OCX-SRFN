@@ -79,12 +79,6 @@
     <Compile Include="CommManager.vb" />
     <Compile Include="CommManager2.vb" />
     <Compile Include="FormList.vb" />
-    <Compile Include="frmManual.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmManual.Designer.vb">
-      <DependentUpon>frmManual.vb</DependentUpon>
-    </Compile>
     <Compile Include="SerialCommand.vb" />
     <Compile Include="TestScript.vb" />
     <Compile Include="TestScriptCommand.vb" />

@@ -86,14 +86,6 @@
     <Compile Include="..\SRFN.Communication\FormList.vb">
       <Link>SRFN\FormList.vb</Link>
     </Compile>
-    <Compile Include="..\SRFN.Communication\frmManual.vb">
-      <Link>SRFN\frmManual.vb</Link>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="..\SRFN.Communication\frmManual.Designer.vb">
-      <Link>SRFN\frmManual.Designer.vb</Link>
-      <DependentUpon>frmManual.vb</DependentUpon>
-    </Compile>
     <Compile Include="..\SRFN.Communication\SerialCommand.vb">
       <Link>SRFN\SerialCommand.vb</Link>
     </Compile>

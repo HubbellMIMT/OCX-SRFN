@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="frmModeSwitch.vb" />
     <Compile Include="frmOCX.vb" />
+    <Compile Include="frmSRFN.vb" />
     <Compile Include="ModeSettings.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Startup.vb" />

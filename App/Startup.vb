@@ -58,7 +58,7 @@ Module Startup
         If mode = "OCX" Then
             _currentForm = New frmOCX()
         Else
-            Dim srfn As New SRFN.Communication.frmManual()
+            Dim srfn As New frmSRFN()
             AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
             _currentForm = srfn
         End If
