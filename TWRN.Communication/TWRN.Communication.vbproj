@@ -83,5 +83,11 @@
     <Compile Include="RunTest.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SerialLibrary\SerialLibrary.vbproj">
+      <Project>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</Project>
+      <Name>SerialLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
