@@ -58,7 +58,9 @@ Module Startup
         If mode = "OCX" Then
             _currentForm = New frmOCX()
         Else
-            _currentForm = New SRFN.Communication.frmManual()
+            Dim srfn As New SRFN.Communication.frmManual()
+            AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
+            _currentForm = srfn
         End If
         AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
         _currentForm.Show()
@@ -66,6 +68,11 @@ Module Startup
 
     Private Sub OnFormClosed(sender As Object, e As FormClosedEventArgs)
         Application.Exit()
+    End Sub
+
+    Private Sub OnModeSwitchRequested(newMode As String)
+        ModeSettings.SaveMode(newMode)
+        LaunchMode(newMode)
     End Sub
 
     Private Sub SwitchMode_Click(sender As Object, e As EventArgs)

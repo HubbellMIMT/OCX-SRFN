@@ -22,6 +22,9 @@ Partial Class frmManual
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.txtSetSQL = New System.Windows.Forms.TextBox()
+        Me.btnSetSQL = New System.Windows.Forms.Button()
+        Me.lblSetSQL = New System.Windows.Forms.Label()
         Me.txtHashVal = New System.Windows.Forms.TextBox()
         Me.chkManualScript = New System.Windows.Forms.CheckBox()
         Me.Label18 = New System.Windows.Forms.Label()
@@ -676,11 +679,40 @@ Partial Class frmManual
         Me.cmdReset.Text = "Reset"
         Me.cmdReset.UseVisualStyleBackColor = true
         '
+        'lblSetSQL
+        '
+        Me.lblSetSQL.AutoSize = True
+        Me.lblSetSQL.Location = New System.Drawing.Point(8, 468)
+        Me.lblSetSQL.Name = "lblSetSQL"
+        Me.lblSetSQL.Size = New System.Drawing.Size(49, 13)
+        Me.lblSetSQL.TabIndex = 80
+        Me.lblSetSQL.Text = "Set SQL:"
+        '
+        'txtSetSQL
+        '
+        Me.txtSetSQL.Location = New System.Drawing.Point(8, 484)
+        Me.txtSetSQL.Name = "txtSetSQL"
+        Me.txtSetSQL.Size = New System.Drawing.Size(180, 20)
+        Me.txtSetSQL.TabIndex = 81
+        Me.txtSetSQL.UseSystemPasswordChar = True
+        '
+        'btnSetSQL
+        '
+        Me.btnSetSQL.Location = New System.Drawing.Point(194, 483)
+        Me.btnSetSQL.Name = "btnSetSQL"
+        Me.btnSetSQL.Size = New System.Drawing.Size(84, 23)
+        Me.btnSetSQL.TabIndex = 82
+        Me.btnSetSQL.Text = "Set"
+        Me.btnSetSQL.UseVisualStyleBackColor = True
+        '
         'frmManual
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 13!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1064, 551)
+        Me.ClientSize = New System.Drawing.Size(1064, 516)
+        Me.Controls.Add(Me.lblSetSQL)
+        Me.Controls.Add(Me.txtSetSQL)
+        Me.Controls.Add(Me.btnSetSQL)
         Me.Controls.Add(Me.cmdReset)
         Me.Controls.Add(Me.cmdSend)
         Me.Controls.Add(Me.btnStart)
@@ -703,7 +735,7 @@ Partial Class frmManual
         Me.MaximizeBox = false
         Me.MinimizeBox = false
         Me.Name = "frmManual"
-        Me.Text = "Manual Test Agent"
+        Me.Text = "SRFN"
         Me.groupBox2.ResumeLayout(false)
         Me.groupBox2.PerformLayout
         Me.GroupBox1.ResumeLayout(false)
@@ -776,4 +808,7 @@ End Sub
     Private WithEvents Label6 As System.Windows.Forms.Label
     Private WithEvents btnStart As System.Windows.Forms.Button
     Private WithEvents cmdReset As System.Windows.Forms.Button
+    Private WithEvents lblSetSQL As System.Windows.Forms.Label
+    Friend WithEvents txtSetSQL As System.Windows.Forms.TextBox
+    Private WithEvents btnSetSQL As System.Windows.Forms.Button
 End Class

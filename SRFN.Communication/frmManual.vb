@@ -7,6 +7,9 @@ Public Class frmManual
 	Private WithEvents _commManager As CommManager2
 	Private _script As TestScript
 
+	''' <summary>Raised when the user enters a valid mode password in the Set SQL box.</summary>
+	Public Event ModeSwitchRequested(mode As String)
+
 	Public Sub New()
 		InitializeComponent()
 	End Sub
@@ -540,6 +543,32 @@ Public Class frmManual
 		Me.Location = New Point(x, y)
 	End Sub
 #End Region
+	Private Sub btnSetSQL_Click(sender As Object, e As EventArgs) Handles btnSetSQL.Click
+		Dim entry As String = txtSetSQL.Text.Trim().ToUpper()
+		Select Case entry
+			Case "TWACS"
+				RaiseEvent ModeSwitchRequested("OCX")
+			Case "SRFN"
+				RaiseEvent ModeSwitchRequested("SRFN")
+			Case Else
+				CommManager2.SqlServerName = txtSetSQL.Text.Trim()
+				SaveSQLServerName(txtSetSQL.Text.Trim())
+				txtSetSQL.Clear()
+		End Select
+	End Sub
+
+	Private Sub SaveSQLServerName(serverName As String)
+		Try
+			Dim path As String = IO.Path.Combine(Application.StartupPath, "SQLValues.xml")
+			Dim xml As String = "<?xml version=""1.0"" encoding=""utf-8""?>" & Environment.NewLine &
+			                    "<Data><Database>" & Environment.NewLine &
+			                    "  <txtSQLServer>" & serverName & "</txtSQLServer>" & Environment.NewLine &
+			                    "</Database></Data>"
+			IO.File.WriteAllText(path, xml, System.Text.Encoding.UTF8)
+		Catch
+		End Try
+	End Sub
+
 	Public Sub Reset()
 		_commManager.ClosePort()
 	End Sub
