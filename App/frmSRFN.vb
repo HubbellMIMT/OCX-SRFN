@@ -9,6 +9,7 @@ Public Class frmSRFN
 
     Private txtSetSQL As New TextBox()
     Private btnSetSQL As New Button()
+    Private lblSetSQL As New Label()
     Private lblStatus As New Label()
 
     Public Sub New()
@@ -16,32 +17,41 @@ Public Class frmSRFN
         FormBorderStyle = FormBorderStyle.FixedSingle
         StartPosition = FormStartPosition.CenterScreen
         MaximizeBox = False
-        ClientSize = New Size(300, 100)
+        ClientSize = New Size(300, 60)
 
-        Dim lblSQL As New Label() With {
-            .Text = "Set SQL:",
-            .Location = New Point(12, 12),
-            .AutoSize = True
-        }
-
-        txtSetSQL.Location = New Point(12, 30)
-        txtSetSQL.Width = 194
-        txtSetSQL.UseSystemPasswordChar = True
-
-        btnSetSQL.Text = "Set"
-        btnSetSQL.Location = New Point(212, 29)
-        btnSetSQL.Width = 76
-        AddHandler btnSetSQL.Click, AddressOf btnSetSQL_Click
-
-        lblStatus.Location = New Point(12, 62)
+        lblStatus.Location = New Point(12, 20)
         lblStatus.Size = New Size(276, 16)
         lblStatus.ForeColor = Color.DimGray
 
         Dim sqlName As String = LoadSQLServerName()
         lblStatus.Text = If(sqlName = "", "SQL server not configured", "SQL: " & sqlName)
 
-        Controls.AddRange({lblSQL, txtSetSQL, btnSetSQL, lblStatus})
+        lblSetSQL.Text = "Set SQL:"
+        lblSetSQL.Location = New Point(12, 70)
+        lblSetSQL.AutoSize = True
+        lblSetSQL.Visible = False
+
+        txtSetSQL.Location = New Point(12, 88)
+        txtSetSQL.Width = 194
+        txtSetSQL.UseSystemPasswordChar = True
+        txtSetSQL.Visible = False
+
+        btnSetSQL.Text = "Set"
+        btnSetSQL.Location = New Point(212, 87)
+        btnSetSQL.Width = 76
+        btnSetSQL.Visible = False
+        AddHandler btnSetSQL.Click, AddressOf btnSetSQL_Click
+
+        Controls.AddRange({lblStatus, lblSetSQL, txtSetSQL, btnSetSQL})
         AcceptButton = btnSetSQL
+    End Sub
+
+    Public Sub ShowSQLEntry()
+        ClientSize = New Size(300, 120)
+        lblSetSQL.Visible = True
+        txtSetSQL.Visible = True
+        btnSetSQL.Visible = True
+        txtSetSQL.Focus()
     End Sub
 
     Private Sub btnSetSQL_Click(sender As Object, e As EventArgs)
@@ -58,6 +68,10 @@ Public Class frmSRFN
                 SaveSQLServerName(entry)
                 lblStatus.Text = "SQL: " & entry
                 txtSetSQL.Clear()
+                ClientSize = New Size(300, 60)
+                lblSetSQL.Visible = False
+                txtSetSQL.Visible = False
+                btnSetSQL.Visible = False
         End Select
     End Sub
 

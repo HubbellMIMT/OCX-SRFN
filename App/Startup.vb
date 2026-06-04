@@ -10,11 +10,13 @@ Module Startup
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
 
-        ' Prompt for mode if no sticky setting exists
         Dim mode As String = ModeSettings.GetMode()
         If mode = "" Then
-            mode = PromptForMode()
-            If mode = "" Then Return  ' user cancelled with no saved mode — exit
+            Using dlg As New frmModeSwitch()
+                If dlg.ShowDialog() <> DialogResult.OK Then Return
+                mode = dlg.SelectedMode
+                ModeSettings.SaveMode(mode)
+            End Using
         End If
 
         SetupTrayIcon()
@@ -23,14 +25,6 @@ Module Startup
         _trayIcon.Visible = False
         _trayIcon.Dispose()
     End Sub
-
-    ''' <summary>Shows mode-select dialog; returns saved mode on success or "" on cancel.</summary>
-    Private Function PromptForMode() As String
-        Using dlg As New frmModeSwitch()
-            dlg.ShowDialog()
-        End Using
-        Return ModeSettings.GetMode()
-    End Function
 
     Private Sub SetupTrayIcon()
         _trayIcon = New NotifyIcon()
@@ -76,11 +70,16 @@ Module Startup
     End Sub
 
     Private Sub SwitchMode_Click(sender As Object, e As EventArgs)
-        Using dlg As New frmModeSwitch()
-            If dlg.ShowDialog() = DialogResult.OK Then
-                LaunchMode(ModeSettings.GetMode())
-            End If
-        End Using
+        If TypeOf _currentForm Is frmSRFN Then
+            CType(_currentForm, frmSRFN).ShowSQLEntry()
+        Else
+            Using dlg As New frmModeSwitch()
+                If dlg.ShowDialog() = DialogResult.OK Then
+                    ModeSettings.SaveMode(dlg.SelectedMode)
+                    LaunchMode(dlg.SelectedMode)
+                End If
+            End Using
+        End If
     End Sub
 
     Private Sub Exit_Click(sender As Object, e As EventArgs)
