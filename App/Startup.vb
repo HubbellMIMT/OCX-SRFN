@@ -11,18 +11,20 @@ Module Startup
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
 
-        Dim mode As String
-        Using dlg As New frmModeSwitch()
-            If dlg.ShowDialog() <> DialogResult.OK Then Return
-            mode = dlg.SelectedMode
-        End Using
+        Dim mode As String = ReadStartupMode()
+        If mode = "" Then
+            MessageBox.Show("app.ini is missing or 'startup' key is invalid." & Environment.NewLine &
+                            "Add a line like:  startup=TWACS  or  startup=SRFN",
+                            "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
 
         SetupTrayIcon(mode)
 
         If mode = "OCX" Then
             _currentForm = New frmOCX()
         Else
-            Dim srfn As New frmSRFN()
+            Dim srfn As New Form1()
             AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
             _currentForm = srfn
         End If
@@ -33,6 +35,14 @@ Module Startup
         _trayIcon.Visible = False
         _trayIcon.Dispose()
     End Sub
+
+    Private Function ReadStartupMode() As String
+        Select Case AppConfig.ReadKey("startup").ToUpper()
+            Case "TWACS", "OCX" : Return "OCX"
+            Case "SRFN" : Return "SRFN"
+            Case Else : Return ""
+        End Select
+    End Function
 
     Private Sub SetupTrayIcon(mode As String)
         _trayIcon = New NotifyIcon()
@@ -86,12 +96,13 @@ Module Startup
         _trayIcon.Visible = False
         _trayIcon.Dispose()
 
+        AppConfig.WriteKey("startup", If(mode = "OCX", "TWACS", "SRFN"))
         SetupTrayIcon(mode)
 
         If mode = "OCX" Then
             _currentForm = New frmOCX()
         Else
-            Dim srfn As New frmSRFN()
+            Dim srfn As New Form1()
             AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
             _currentForm = srfn
         End If
@@ -104,8 +115,27 @@ Module Startup
     End Sub
 
     Private Sub OnModeSwitchRequested(newMode As String)
-        ModeSettings.SaveMode(newMode)
+        AppConfig.WriteKey("startup", If(newMode = "OCX", "TWACS", "SRFN"))
+
+        RemoveHandler _currentForm.FormClosed, AddressOf OnFormClosed
         _currentForm.Close()
+        _currentForm.Dispose()
+        _currentForm = Nothing
+
+        _trayIcon.Visible = False
+        _trayIcon.Dispose()
+
+        SetupTrayIcon(newMode)
+
+        If newMode = "OCX" Then
+            _currentForm = New frmOCX()
+        Else
+            Dim srfn As New Form1()
+            AddHandler srfn.ModeSwitchRequested, AddressOf OnModeSwitchRequested
+            _currentForm = srfn
+        End If
+        AddHandler _currentForm.FormClosed, AddressOf OnFormClosed
+        _currentForm.Show()
     End Sub
 
     Private Sub Exit_Click(sender As Object, e As EventArgs)
