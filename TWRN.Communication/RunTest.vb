@@ -154,6 +154,26 @@ Module Module1
         comm.DataBits = "8"
         comm.BaudRate = "2400"
     End Sub
+Public Async Function ReadTWACSID(CommPort As Integer) As Task(Of String)
+    Try
+        comm.PortName = "COM" & CommPort
+        gBaudRate = 2400
+        comm.BaudRate = CInt(gBaudRate)
+        comm.inbLen = "9"
+        comm.opcode = "3E"
+        comm.outbmsg = "0184"
+        If gTDelay = 0 Then gTDelay = 5000
+        Await comm.WriteData(comm.outbmsg)
+        stractual = RemoveInbHeader(stractual)
+        If InbData IsNot Nothing AndAlso InbData.Length > 0 Then
+            gReg24 = InbData
+            Return CStr(Convert.ToInt32(InbData, 16))
+        End If
+        Return ""
+    Catch ex As Exception
+        Return "Error: " & ex.Message
+    End Try
+End Function
 Public Function RemoveInbHeader(ByVal inbounbdmsg As string) As String
     inbounbdmsg = inbounbdmsg.Replace(ChrW(1),"").Replace(ChrW(4),"").Replace(ChrW(6),"").Replace("?","").Replace(vbNullChar,"")
     If inbounbdmsg.Length > 6 then inbounbdmsg = inbounbdmsg.Substring(0, inbounbdmsg.Length - 2)
