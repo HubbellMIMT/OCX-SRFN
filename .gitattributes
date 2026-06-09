@@ -1,8 +1,13 @@
-# Normalize line endings to CRLF on checkout (Windows)
-* text=auto eol=crlf
-
-# Keep binaries untouched
+﻿* text=auto eol=crlf
+*.vb text eol=crlf
+*.vbproj text eol=crlf
+*.sln text eol=crlf
+*.xml text eol=crlf
+*.config text eol=crlf
+*.ini text eol=crlf
+*.resx text eol=crlf
+*.md text eol=crlf
 *.dll binary
 *.exe binary
-*.pdb binary
-*.zip binary
+*.png binary
+*.ico binary
