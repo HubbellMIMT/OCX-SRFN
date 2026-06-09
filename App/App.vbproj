@@ -107,6 +107,11 @@
     <Compile Include="SRFN\frmSQLBrowser.Designer.vb" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="SRFN\Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>
