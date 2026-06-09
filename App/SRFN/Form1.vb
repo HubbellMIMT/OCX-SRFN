@@ -1296,18 +1296,18 @@ Private Sub SetRA6ButtonsEnabled(ByVal enab As Boolean)
 
 	Private Sub RenumberAndFixXml(filename As String)
 		Try
-			Dim doc As New Xml.XmlDocument()
+			Dim doc As New XmlDocument()
 			doc.Load(filename)
 
-			Dim tables As Xml.XmlNodeList = doc.SelectNodes("//Table")
+			Dim tables As XmlNodeList = doc.SelectNodes("//Table")
 			Dim count As Integer = 0
-			For Each tbl As Xml.XmlNode In tables
+			For Each tbl As XmlNode In tables
 				count += 1
-				Dim refNode As Xml.XmlNode = tbl.SelectSingleNode("RefNum")
+				Dim refNode As XmlNode = tbl.SelectSingleNode("RefNum")
 				If refNode IsNot Nothing Then refNode.InnerText = count.ToString()
 			Next
 
-			Dim progressNode As Xml.XmlNode = doc.SelectSingleNode("//HashTable/ProgressMax")
+			Dim progressNode As XmlNode = doc.SelectSingleNode("//HashTable/ProgressMax")
 			If progressNode IsNot Nothing Then progressNode.InnerText = count.ToString()
 
 			doc.Save(filename)
@@ -1320,7 +1320,7 @@ Private Sub SetRA6ButtonsEnabled(ByVal enab As Boolean)
 
 	Private Sub GenerateSqlFromXml(filename As String, hashValue As String)
 		Try
-			Dim doc As New Xml.XmlDocument()
+			Dim doc As New XmlDocument()
 			doc.Load(filename)
 
 			Dim productFamily As String = ""
@@ -1330,7 +1330,7 @@ Private Sub SetRA6ButtonsEnabled(ByVal enab As Boolean)
 			Dim progressMax As String = ""
 			Dim firmware As String = ""
 
-			Dim n As Xml.XmlNode
+			Dim n As XmlNode
 			n = doc.SelectSingleNode("//HashTable/ProductFamily") : If n IsNot Nothing Then productFamily = n.InnerText
 			n = doc.SelectSingleNode("//HashTable/Drawing")       : If n IsNot Nothing Then drawing = n.InnerText
 			n = doc.SelectSingleNode("//HashTable/CustomerName")  : If n IsNot Nothing Then customerName = n.InnerText
@@ -1338,10 +1338,10 @@ Private Sub SetRA6ButtonsEnabled(ByVal enab As Boolean)
 			n = doc.SelectSingleNode("//HashTable/ProgressMax")   : If n IsNot Nothing Then progressMax = n.InnerText
 
 			' Firmware version from comDeviceFirmwareVersion expected response
-			For Each tbl As Xml.XmlNode In doc.SelectNodes("//Table")
-				Dim cn As Xml.XmlNode = tbl.SelectSingleNode("CommName")
+			For Each tbl As XmlNode In doc.SelectNodes("//Table")
+				Dim cn As XmlNode = tbl.SelectSingleNode("CommName")
 				If cn IsNot Nothing AndAlso cn.InnerText = "comDeviceFirmwareVersion" Then
-					Dim er As Xml.XmlNode = tbl.SelectSingleNode("Exp_Resp")
+					Dim er As XmlNode = tbl.SelectSingleNode("Exp_Resp")
 					If er IsNot Nothing Then firmware = er.InnerText
 					Exit For
 				End If
@@ -1349,9 +1349,9 @@ Private Sub SetRA6ButtonsEnabled(ByVal enab As Boolean)
 
 			' Build <Table> XML content
 			Dim tbls As New System.Text.StringBuilder()
-			For Each tbl As Xml.XmlNode In doc.SelectNodes("//Table")
+			For Each tbl As XmlNode In doc.SelectNodes("//Table")
 				tbls.AppendLine("   <Table>")
-				For Each child As Xml.XmlNode In tbl.ChildNodes
+				For Each child As XmlNode In tbl.ChildNodes
 					If child.InnerText = "" Then
 						tbls.AppendLine("     <" & child.Name & "/>")
 					Else
