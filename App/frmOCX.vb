@@ -328,6 +328,7 @@ Public Class frmOCX
     Private Sub PopulateCommPorts()
         Dim current As String = If(txtCommPort.Text, "")
         txtCommPort.Items.Clear()
+        txtCommPort.Items.Add("Optical")
         For Each port As String In SerialPort.GetPortNames()
             txtCommPort.Items.Add(port.Replace("COM", "").Replace("com", ""))
         Next
@@ -346,39 +347,32 @@ Public Class frmOCX
 
     Private Sub LoadProductFamily()
         txtProductFamily.Items.Clear()
-        Dim xmlPath As String = IO.Path.Combine(Application.StartupPath, "FormList.xml")
-        If IO.File.Exists(xmlPath) Then
-            Try
-                Dim doc As New Xml.XmlDocument()
-                doc.Load(xmlPath)
-                For Each node As Xml.XmlNode In doc.DocumentElement.ChildNodes
-                    If node.NodeType = Xml.XmlNodeType.Element Then
-                        Dim name As String = node.Name.Replace("-RA6", "+c-RA6").Replace("SRFN-I-210C", "SRFN-I-210+c").Replace("AclaraRF3-I210C", "AclaraRF3-I210+c")
-                        If Not txtProductFamily.Items.Contains(name) Then
-                            txtProductFamily.Items.Add(name)
-                        End If
-                    End If
-                Next
-            Catch
-            End Try
-        End If
-        If txtProductFamily.Items.Count = 0 Then
-            txtProductFamily.Items.AddRange(New Object() {
-                "SRFN-I-210+", "SRFN-I-210+c", "SRFN-KV2c",
-                "SRFN-I-210+c-RA6", "AclaraRF3-I210+c", "AclaraRF3-KV2c", "SRFN-EV2C-RA6"
-            })
-        End If
-        If txtProductFamily.Items.Count > 0 Then txtProductFamily.SelectedIndex = 0
+        txtProductFamily.Items.AddRange(New Object() {
+            "SRFN-I-210+", "SRFN-I-210+c", "SRFN-KV2c",
+            "SRFN-I-210+c-RA6", "AclaraRF3-I210+c", "AclaraRF3-KV2c", "SRFN-EV2C-RA6"
+        })
+        txtProductFamily.SelectedIndex = 0
     End Sub
 
     Private Sub UpdatePortLabel()
-        lblPortStatus.Text = If(txtCommPort.Text <> "", "Port: COM" & txtCommPort.Text, "Port: --")
+        Dim sel As String = txtCommPort.Text
+        If sel = "" Then
+            lblPortStatus.Text = "Port: --"
+        ElseIf sel = "Optical" Then
+            lblPortStatus.Text = "Port: Optical"
+        Else
+            lblPortStatus.Text = "Port: COM" & sel
+        End If
     End Sub
 
     Private Function GetCommPortNumber() As Integer
         Dim n As Integer = 1
         Integer.TryParse(txtCommPort.Text, n)
         Return n
+    End Function
+
+    Private Function IsOptical() As Boolean
+        Return txtCommPort.Text = "Optical"
     End Function
 
     ' ── menu handlers ────────────────────────────────────────────
