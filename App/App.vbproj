@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.vb" />
+    <Compile Include="IMainForm.vb" />
     <Compile Include="frmModeSwitch.vb" />
     <Compile Include="frmOCX.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />

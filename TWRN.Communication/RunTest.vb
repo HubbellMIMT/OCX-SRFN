@@ -990,8 +990,8 @@ SkipHash:
 
 SkipHash:
             '.................................Verify Integration Values
-            If Varparams(5) <> dsIntParams.Tables("HashTable").Rows(0).Item(1) Or  '..............HashValue
-                Varparams(20) <> dsIntParams.Tables("HashTable").Rows(0).Item(2) Then  '..........HashValue
+            If Varparams(5) <> dsIntParams.Tables("HashTable").Rows(0).Item(1) Or
+                Varparams(20) <> dsIntParams.Tables("HashTable").Rows(0).Item(2) Then
                 Return False
             End If
 

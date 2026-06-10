@@ -5,12 +5,14 @@ Imports TWRN.Communication.TWRN
 
 Public Class frmOCX
     Inherits Form
+    Implements IMainForm
 
     ' ── controls ─────────────────────────────────────────────────
     Private WithEvents mnuMain As MenuStrip
     Private WithEvents mnuConfigure As ToolStripMenuItem
     Private WithEvents mnuSQLConfig As ToolStripMenuItem
     Private WithEvents mnuCommPorts As ToolStripMenuItem
+    Private WithEvents mnuUploadFirmware As ToolStripMenuItem
     Private lblPortStatus As ToolStripLabel
 
     Private txtResults As TextBox
@@ -43,10 +45,13 @@ Public Class frmOCX
     Private WithEvents txtSQLServer As TextBox
     Private WithEvents btnConnect As Button
     Private WithEvents txtPassword As TextBox
+    Private lblSetSQL As Label
 
     Private _lgmodule As New TWRN.Communication.TWRN.lgmoduleINT()
     Private _usbOn As Boolean = True
     Private _locked As Boolean = False
+    Private _adminMode As Boolean = False
+    Private _frmCommPorts As frmCommPorts = Nothing
 
     ' ── constructor ──────────────────────────────────────────────
     Public Sub New()
@@ -61,6 +66,7 @@ Public Class frmOCX
         mnuConfigure = New ToolStripMenuItem()
         mnuSQLConfig = New ToolStripMenuItem()
         mnuCommPorts = New ToolStripMenuItem()
+        mnuUploadFirmware = New ToolStripMenuItem()
         lblPortStatus = New ToolStripLabel()
         txtResults = New TextBox()
         btnSendcommand = New Button()
@@ -98,17 +104,19 @@ Public Class frmOCX
         txtSQLServer = New TextBox()
         btnConnect = New Button()
         txtPassword = New TextBox()
+        lblSetSQL = New Label()
         Dim lblCmd As New Label()
 
         mnuMain.SuspendLayout()
         Panel1.SuspendLayout()
         Me.SuspendLayout()
 
-        ' ── MenuStrip ────────────────────────────────────────────
-        mnuConfigure.DropDownItems.AddRange(New ToolStripItem() {mnuSQLConfig, mnuCommPorts})
+        ' ── MenuStrip ─────────────────────────────────────────────
+        mnuConfigure.DropDownItems.AddRange(New ToolStripItem() {mnuSQLConfig, mnuCommPorts, mnuUploadFirmware})
         mnuConfigure.Text = "Configure"
         mnuSQLConfig.Text = "SQL Config"
         mnuCommPorts.Text = "Comm Ports"
+        mnuUploadFirmware.Text = "Firmware"
         lblPortStatus.Alignment = ToolStripItemAlignment.Right
         lblPortStatus.Font = New Font("Microsoft Sans Serif", 8, FontStyle.Bold)
         lblPortStatus.Margin = New Padding(0, 1, 31, 2)
@@ -116,6 +124,16 @@ Public Class frmOCX
         mnuMain.Items.AddRange(New ToolStripItem() {mnuConfigure, lblPortStatus})
         mnuMain.Location = New Point(0, 0)
         mnuMain.Size = New Size(616, 24)
+
+        ' ── Set SQL (upper right) ────────────────────────────────
+        lblSetSQL.AutoSize = True
+        lblSetSQL.Location = New Point(557, 28)
+        lblSetSQL.Text = "Set SQL"
+
+        txtPassword.Location = New Point(560, 44)
+        txtPassword.Size = New Size(44, 20)
+        txtPassword.PasswordChar = CChar("*")
+        txtPassword.TextAlign = HorizontalAlignment.Center
 
         ' ── Send Command area ────────────────────────────────────
         lblCmd.AutoSize = True
@@ -142,15 +160,15 @@ Public Class frmOCX
         btnReadTWACS.Size = New Size(90, 23)
         btnReadTWACS.Text = "Read TWACS"
 
-        btnOpticalLogon.Location = New Point(108, 309)
+        btnOpticalLogon.Location = New Point(108, 311)
         btnOpticalLogon.Size = New Size(90, 23)
         btnOpticalLogon.Text = "Optical Logon"
 
-        btnChkPort.Location = New Point(206, 309)
+        btnChkPort.Location = New Point(206, 313)
         btnChkPort.Size = New Size(90, 23)
         btnChkPort.Text = "Check Port"
 
-        btnResetRelease.Location = New Point(302, 309)
+        btnResetRelease.Location = New Point(417, 399)
         btnResetRelease.Size = New Size(90, 23)
         btnResetRelease.Text = "Reset Release"
 
@@ -159,16 +177,16 @@ Public Class frmOCX
         btnReadFirmware.Size = New Size(90, 23)
         btnReadFirmware.Text = "Read Firmware"
 
-        btnOpticalLogoff.Location = New Point(108, 338)
+        btnOpticalLogoff.Location = New Point(108, 339)
         btnOpticalLogoff.Size = New Size(90, 23)
         btnOpticalLogoff.Text = "Optical Logoff"
 
-        btnToggleUSB.Location = New Point(206, 338)
+        btnToggleUSB.Location = New Point(206, 342)
         btnToggleUSB.Size = New Size(90, 23)
         btnToggleUSB.Text = "USB OFF"
         btnToggleUSB.BackColor = Color.Yellow
 
-        btnBatch.Location = New Point(302, 338)
+        btnBatch.Location = New Point(514, 429)
         btnBatch.Size = New Size(90, 23)
         btnBatch.Text = "Batch"
         btnBatch.Enabled = False
@@ -178,7 +196,7 @@ Public Class frmOCX
         btnVerifyComm.Size = New Size(90, 23)
         btnVerifyComm.Text = "Verify Comm"
 
-        btnOpenLog.Location = New Point(108, 367)
+        btnOpenLog.Location = New Point(514, 455)
         btnOpenLog.Size = New Size(90, 23)
         btnOpenLog.Text = "Log Folder"
         btnOpenLog.BackColor = Color.LightYellow
@@ -260,20 +278,20 @@ Public Class frmOCX
         btnSave.Text = "Save All"
 
         lblSQLLbl.AutoSize = True
-        lblSQLLbl.Location = New Point(4, 155)
+        lblSQLLbl.Location = New Point(232, 44)
         lblSQLLbl.Text = "SQL Server"
 
-        txtSQLServer.Location = New Point(80, 152)
-        txtSQLServer.Size = New Size(200, 20)
+        txtSQLServer.Location = New Point(235, 57)
+        txtSQLServer.Size = New Size(122, 20)
 
-        btnConnect.Location = New Point(286, 150)
-        btnConnect.Size = New Size(75, 23)
-        btnConnect.Text = "Connect"
+        btnConnect.Location = New Point(496, 143)
+        btnConnect.Size = New Size(90, 23)
+        btnConnect.Text = "Set SQL"
+        btnConnect.BackColor = Color.LightCoral
 
-        txtPassword.Location = New Point(480, 152)
-        txtPassword.PasswordChar = CChar("*")
-        txtPassword.Size = New Size(60, 20)
-        txtPassword.TextAlign = HorizontalAlignment.Center
+        txtSQLServer.ReadOnly = True
+        txtProductFamily.Enabled = False
+        txtFormID.Enabled = False
 
         Panel1.Controls.AddRange(New Control() {
             lblCommPort, txtCommPort,
@@ -285,8 +303,7 @@ Public Class frmOCX
             chkRDInstalled,
             lblPackPathLbl, txtPackPath,
             btnSendVarParam, btnLockForm, btnSave,
-            lblSQLLbl, txtSQLServer, btnConnect,
-            txtPassword
+            lblSQLLbl, txtSQLServer, btnConnect
         })
 
         ' ── Form ─────────────────────────────────────────────────
@@ -298,6 +315,7 @@ Public Class frmOCX
 
         Me.Controls.AddRange(New Control() {
             mnuMain, lblCmd,
+            lblSetSQL, txtPassword,
             btnSendcommand, txtcommand,
             txtResults,
             btnReadTWACS, btnOpticalLogon, btnChkPort, btnResetRelease,
@@ -346,10 +364,30 @@ Public Class frmOCX
 
     ' ── menu handlers ────────────────────────────────────────────
     Private Sub mnuSQLConfig_Click(sender As Object, e As EventArgs) Handles mnuSQLConfig.Click
+        Dim frm As New frmSQLConfig(Me)
+        frm.ShowDialog(Me)
     End Sub
 
     Private Sub mnuCommPorts_Click(sender As Object, e As EventArgs) Handles mnuCommPorts.Click
-        PopulateCommPorts()
+        If _frmCommPorts Is Nothing OrElse _frmCommPorts.IsDisposed Then
+            _frmCommPorts = New frmCommPorts(Me)
+            PlaceForm(_frmCommPorts)
+            _frmCommPorts.Show(Me)
+        Else
+            _frmCommPorts.BringToFront()
+        End If
+    End Sub
+
+    Private Sub mnuUploadFirmware_Click(sender As Object, e As EventArgs) Handles mnuUploadFirmware.Click
+        Dim frm As New frmFirmware(Me)
+        frm.ShowDialog(Me)
+    End Sub
+
+    Private Sub PlaceForm(frm As Form)
+        Dim screen As Rectangle = System.Windows.Forms.Screen.GetWorkingArea(Me)
+        Dim x As Integer = Me.Right + 5
+        If x + frm.Width > screen.Right Then x = screen.Right - frm.Width
+        frm.Location = New Point(x, Me.Top)
     End Sub
 
     ' ── button handlers ──────────────────────────────────────────
@@ -434,8 +472,51 @@ Public Class frmOCX
         txtResults.Text = "Save All: not yet implemented"
     End Sub
 
+    Private Sub txtPassword_TextChanged(sender As Object, e As EventArgs) Handles txtPassword.TextChanged
+        If txtPassword.Text.ToUpper() = "RA66" Then
+            SetAdminMode(Not _adminMode)
+            txtPassword.Text = ""
+            txtResults.Text = If(_adminMode, "Admin unlocked — config accessible.", "Admin locked.")
+        End If
+    End Sub
+
     Private Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
-        txtResults.Text = "Connect SQL: not yet implemented"
+        If _adminMode Then
+            Dim pw As String = InputBox("Enter RA66 to lock admin, or leave blank to configure SQL:", "Set SQL", "")
+            If pw.ToUpper() = "RA66" Then
+                SetAdminMode(False)
+                txtResults.Text = "Admin mode locked."
+            ElseIf pw <> "" Then
+                Dim server As String = InputBox("Enter SQL Server name:", "Set SQL Server", txtSQLServer.Text)
+                If server <> "" Then
+                    txtSQLServer.Text = server
+                    txtResults.Text = "SQL Server set to: " & server
+                End If
+            End If
+        Else
+            Dim pw As String = InputBox("Enter admin password:", "Set SQL — Admin Required", "")
+            If pw.ToUpper() = "RA66" Then
+                SetAdminMode(True)
+                Dim server As String = InputBox("Enter SQL Server name:", "Set SQL Server", txtSQLServer.Text)
+                If server <> "" Then
+                    txtSQLServer.Text = server
+                    txtResults.Text = "SQL Server set to: " & server & "  [admin unlocked]"
+                Else
+                    txtResults.Text = "Admin unlocked — config accessible."
+                End If
+            ElseIf pw <> "" Then
+                MsgBox("Invalid password.", MsgBoxStyle.OkOnly Or MsgBoxStyle.Exclamation, "Set SQL")
+            End If
+        End If
+    End Sub
+
+    Private Sub SetAdminMode(enabled As Boolean)
+        _adminMode = enabled
+        txtSQLServer.ReadOnly = Not enabled
+        txtProductFamily.Enabled = enabled
+        txtFormID.Enabled = enabled
+        btnConnect.BackColor = If(enabled, Color.LightGreen, Color.LightCoral)
+        btnConnect.Text = If(enabled, "Set SQL ●", "Set SQL")
     End Sub
 
     Private Sub txtProductFamily_SelectedIndexChanged(sender As Object, e As EventArgs) Handles txtProductFamily.SelectedIndexChanged
@@ -445,5 +526,117 @@ Public Class frmOCX
     Private Sub txtCommPort_SelectedIndexChanged(sender As Object, e As EventArgs) Handles txtCommPort.SelectedIndexChanged
         UpdatePortLabel()
     End Sub
+
+    ' ── IMainForm implementation ──────────────────────────────────────────
+    Public Property DLLRevisionText As String Implements IMainForm.DLLRevisionText
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public Property CustomerValuesText As String Implements IMainForm.CustomerValuesText
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public Property TestResultsText As String Implements IMainForm.TestResultsText
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public Property FirmwareConnStr As String Implements IMainForm.FirmwareConnStr
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public Property SQLServerText As String Implements IMainForm.SQLServerText
+        Get
+            Return txtSQLServer.Text
+        End Get
+        Set(v As String)
+            txtSQLServer.Text = v
+        End Set
+    End Property
+    Private _sqlServer As String = ""
+    Public Property SQLServer As String Implements IMainForm.SQLServer
+        Get
+            Return _sqlServer
+        End Get
+        Set(v As String)
+            _sqlServer = v
+            txtSQLServer.Text = v
+        End Set
+    End Property
+    Public Property ShowFormChecked As Boolean Implements IMainForm.ShowFormChecked
+        Get
+            Return False
+        End Get
+        Set(v As Boolean)
+        End Set
+    End Property
+    Public Property RA6ProgPathText As String Implements IMainForm.RA6ProgPathText
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public WriteOnly Property PasswordText As String Implements IMainForm.PasswordText
+        Set(v As String)
+            txtPassword.Text = v
+        End Set
+    End Property
+    Public Property CommPortText As String Implements IMainForm.CommPortText
+        Get
+            Return txtCommPort.Text
+        End Get
+        Set(v As String)
+            txtCommPort.Text = v
+            UpdatePortLabel()
+        End Set
+    End Property
+    Public Property DebugPortText As String Implements IMainForm.DebugPortText
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public Property RelayPortText As String Implements IMainForm.RelayPortText
+        Get
+            Return ""
+        End Get
+        Set(v As String)
+        End Set
+    End Property
+    Public Sub ShowPorts() Implements IMainForm.ShowPorts
+        PopulateCommPorts()
+    End Sub
+    Public Sub SetFormXml() Implements IMainForm.SetFormXml
+    End Sub
+    Public Sub UpdatePortStatus() Implements IMainForm.UpdatePortStatus
+        UpdatePortLabel()
+    End Sub
+    Public Property ProductFamilyText As String Implements IMainForm.ProductFamilyText
+        Get
+            Return txtProductFamily.Text
+        End Get
+        Set(v As String)
+            txtProductFamily.Text = v
+        End Set
+    End Property
+    Public Sub WriteFirmwareToNIC(firmwareName As String) Implements IMainForm.WriteFirmwareToNIC
+        txtResults.Text = "Firmware upload not available in TWACS mode."
+    End Sub
+    Public Function VirginDelay() As Task(Of Boolean) Implements IMainForm.VirginDelay
+        Return Task.FromResult(False)
+    End Function
 
 End Class

@@ -1,11 +1,11 @@
 Public Class frmCommPorts
 
-    Private _main As Form1
+    Private _main As IMainForm
     Private _knownPorts As New HashSet(Of String)
     Private _discoverTimer As New System.Windows.Forms.Timer() With {.Interval = 500}
     Private _debugForm As frmDebugTerminal = Nothing
 
-    Public Sub New(mainForm As Form1)
+    Public Sub New(mainForm As IMainForm)
         InitializeComponent()
         _main = mainForm
     End Sub
@@ -24,9 +24,9 @@ Public Class frmCommPorts
             cboDebugPort.Items.Add(portNum)
             cboRelayPort.Items.Add(portNum)
         Next
-        cboCommPort.Text = _main.txtCommPort.Text
-        cboDebugPort.Text = _main.txtDebugPort.Text
-        cboRelayPort.Text = _main.txtRelayPort.Text
+        cboCommPort.Text = _main.CommPortText
+        cboDebugPort.Text = _main.DebugPortText
+        cboRelayPort.Text = _main.RelayPortText
     End Sub
 
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
@@ -38,9 +38,9 @@ Public Class frmCommPorts
         Dim debug As String = cboDebugPort.Text
         Dim relay As String = cboRelayPort.Text
         _main.ShowPorts()
-        _main.txtCommPort.Text = comm
-        _main.txtDebugPort.Text = debug
-        _main.txtRelayPort.Text = relay
+        _main.CommPortText = comm
+        _main.DebugPortText = debug
+        _main.RelayPortText = relay
         _main.SetFormXml()
         _main.UpdatePortStatus()
         Me.Close()
@@ -52,7 +52,7 @@ Public Class frmCommPorts
 
     Private Sub frmCommPorts_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         _discoverTimer.Stop()
-        _main.txtPassword.Text = ""
+        _main.PasswordText = ""
         ' Debug terminal stays open independently — do not close it here
     End Sub
 

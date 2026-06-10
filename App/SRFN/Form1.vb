@@ -10,6 +10,7 @@ Imports SerialLibrary
 Imports SRFN.Communication
 Public Class Form1
 	Inherits Form
+	Implements IMainForm
 
 	Public Event ModeSwitchRequested(mode As String)
 
@@ -136,7 +137,7 @@ Public Class Form1
 		CommManager2.RelayPort = txtRelayPort.Text
 		CommManager2.SqlServerName = _sqlServer
 		CommManager2.CurrentProductFamily = txtProductFamily.Text
-		CommManager2.FirmwareConnStr = FirmwareConnStr()
+		CommManager2.FirmwareConnStr = BuildFirmwareConnStr()
 		CommManager2.CustomerValuesConnStr = SRFN_CustomerValues.Text.Trim()
 		CommManager2.TestResultsConnStr = SRFN_TestResults.Text.Trim()
 		CommManager2.DLLRevisionConnStr = DLL_Revision.Text.Trim()
@@ -182,7 +183,7 @@ Public Class Form1
 		End Try
 	End Sub
 #Region "RA6 Module"
-	Friend Async Function VirginDelay() As Task(Of Boolean)
+	Public Async Function VirginDelay() As Task(Of Boolean) Implements IMainForm.VirginDelay
 		Dim response As String = Await SendMsg("virgindelay")
 		Return response.Contains("Signature erased")
 	End Function
@@ -415,7 +416,7 @@ Public Class Form1
 		End With
 		txtPassword.Text = ""
 	End Sub
-	Public Sub SetFormXml()
+	Public Sub SetFormXml() Implements IMainForm.SetFormXml
 		Dim FormValuesxml As String = Application.StartupPath & "\FormValues.xml"
 		Select Case txtProductFamily.Text
 			Case "SRFN-I-210+"
@@ -691,13 +692,13 @@ LoadFormValues:
 	End Sub
 
 	'.............................................END XML GET FORM VALUES
-	Public Sub UpdatePortStatus()
+	Public Sub UpdatePortStatus() Implements IMainForm.UpdatePortStatus
 		lblPortStatus.Text = "Comm: " & If(txtCommPort.Text <> "", txtCommPort.Text, "--") &
 		                     "  |  Debug: " & If(txtDebugPort.Text <> "", txtDebugPort.Text, "--") &
 		                     "  |  Relay: " & If(txtRelayPort.Text <> "", txtRelayPort.Text, "--")
 	End Sub
 
-	Public Sub ShowPorts()
+	Public Sub ShowPorts() Implements IMainForm.ShowPorts
 		txtCommPort.Items.Clear()
 		txtCommPort.ResetText()
 		txtDebugPort.Items.Clear()
@@ -961,7 +962,7 @@ Dim result As String = ""
 			_sqlServer = server
 			CommManager2.SqlServerName = server
 			CommManager2.CurrentProductFamily = txtProductFamily.Text
-			CommManager2.FirmwareConnStr = FirmwareConnStr()
+			CommManager2.FirmwareConnStr = BuildFirmwareConnStr()
 			CommManager2.CustomerValuesConnStr = SRFN_CustomerValues.Text.Trim()
 			CommManager2.TestResultsConnStr = SRFN_TestResults.Text.Trim()
 			CommManager2.DLLRevisionConnStr = DLL_Revision.Text.Trim()
@@ -1854,7 +1855,7 @@ Private Async Function ToggleUSB(ByVal msg As String) As Task
 #Region "Firmware SQL"
 	Public SelectedFirmwareName As String = ""
 
-	Public Property SQLServer As String
+	Public Property SQLServer As String Implements IMainForm.SQLServer
 		Get
 			Return _sqlServer
 		End Get
@@ -1863,7 +1864,7 @@ Private Async Function ToggleUSB(ByVal msg As String) As Task
 		End Set
 	End Property
 
-	Friend Property Aclara_FirmwareConnStr As String
+	Public Property FirmwareConnStr As String Implements IMainForm.FirmwareConnStr
 		Get
 			Return _firmwareConnStr
 		End Get
@@ -1872,15 +1873,15 @@ Private Async Function ToggleUSB(ByVal msg As String) As Task
 		End Set
 	End Property
 
-	Private Function FirmwareConnStr() As String
-		Dim cs As String = Aclara_FirmwareConnStr
+	Private Function BuildFirmwareConnStr() As String
+		Dim cs As String = FirmwareConnStr
 		If cs = "" Then cs = DLL_Revision.Text
 		If cs <> "" Then Return cs
 		Return "Provider=SQLOLEDB;Data Source=" & _sqlServer & ";Initial Catalog=Aclara_CustomerSpecific;Integrated Security=SSPI;"
 	End Function
 
 
-	Public Sub WriteFirmwareToNIC(firmwareName As String)
+	Public Sub WriteFirmwareToNIC(firmwareName As String) Implements IMainForm.WriteFirmwareToNIC
 		SelectedFirmwareName = firmwareName
 		txtResults.Text = "Downloading firmware from SQL..."
 		Me.Refresh()
@@ -1912,5 +1913,93 @@ Private Async Function ToggleUSB(ByVal msg As String) As Task
 
 	End Sub
 #End Region
+
+	' ── IMainForm wrappers ─────────────────────────────────────────────────
+	Public Property DLLRevisionText As String Implements IMainForm.DLLRevisionText
+		Get
+			Return DLL_Revision.Text
+		End Get
+		Set(v As String)
+			DLL_Revision.Text = v
+		End Set
+	End Property
+	Public Property CustomerValuesText As String Implements IMainForm.CustomerValuesText
+		Get
+			Return SRFN_CustomerValues.Text
+		End Get
+		Set(v As String)
+			SRFN_CustomerValues.Text = v
+		End Set
+	End Property
+	Public Property TestResultsText As String Implements IMainForm.TestResultsText
+		Get
+			Return SRFN_TestResults.Text
+		End Get
+		Set(v As String)
+			SRFN_TestResults.Text = v
+		End Set
+	End Property
+	Public Property SQLServerText As String Implements IMainForm.SQLServerText
+		Get
+			Return txtSQLServer.Text
+		End Get
+		Set(v As String)
+			txtSQLServer.Text = v
+			SQLServer = v
+		End Set
+	End Property
+	Public Property ShowFormChecked As Boolean Implements IMainForm.ShowFormChecked
+		Get
+			Return chkShowForm.Checked
+		End Get
+		Set(v As Boolean)
+			chkShowForm.Checked = v
+		End Set
+	End Property
+	Public Property RA6ProgPathText As String Implements IMainForm.RA6ProgPathText
+		Get
+			Return RA6ProgPath.Text
+		End Get
+		Set(v As String)
+			RA6ProgPath.Text = v
+		End Set
+	End Property
+	Public WriteOnly Property PasswordText As String Implements IMainForm.PasswordText
+		Set(v As String)
+			txtPassword.Text = v
+		End Set
+	End Property
+	Public Property CommPortText As String Implements IMainForm.CommPortText
+		Get
+			Return txtCommPort.Text
+		End Get
+		Set(v As String)
+			txtCommPort.Text = v
+		End Set
+	End Property
+	Public Property DebugPortText As String Implements IMainForm.DebugPortText
+		Get
+			Return txtDebugPort.Text
+		End Get
+		Set(v As String)
+			txtDebugPort.Text = v
+		End Set
+	End Property
+	Public Property RelayPortText As String Implements IMainForm.RelayPortText
+		Get
+			Return txtRelayPort.Text
+		End Get
+		Set(v As String)
+			txtRelayPort.Text = v
+		End Set
+	End Property
+	Public Property ProductFamilyText As String Implements IMainForm.ProductFamilyText
+		Get
+			Return txtProductFamily.Text
+		End Get
+		Set(v As String)
+			txtProductFamily.Text = v
+		End Set
+	End Property
 
 End Class

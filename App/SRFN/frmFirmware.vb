@@ -1,23 +1,23 @@
 Public Class frmFirmware
 
-    Private _main As Form1
+    Private _main As IMainForm
 
-    Public Sub New(mainForm As Form1)
+    Public Sub New(mainForm As IMainForm)
         InitializeComponent()
         _main = mainForm
     End Sub
 
     Private Sub frmFirmware_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        lblProdFamilyVal.Text = _main.txtProductFamily.Text
+        lblProdFamilyVal.Text = _main.ProductFamilyText
         LoadFirmwareList()
     End Sub
 
     Private Sub LoadFirmwareList()
         cboFirmware.Items.Clear()
-        Dim productFamily As String = _main.txtProductFamily.Text
+        Dim productFamily As String = _main.ProductFamilyText
         If _main.SQLServer = "" OrElse productFamily = "" Then Return
-        Dim fcs As String = _main.Aclara_FirmwareConnStr
-        If fcs = "" Then fcs = _main.DLL_Revision.Text
+        Dim fcs As String = _main.FirmwareConnStr
+        If fcs = "" Then fcs = _main.DLLRevisionText
         If fcs <> "" Then SRFN.Communication.CommManager2.FirmwareConnStr = fcs
         Dim items As List(Of String) = SRFN.Communication.CommManager2.FetchFirmwareList(productFamily)
         For Each fn In items
@@ -35,7 +35,7 @@ Public Class frmFirmware
             MsgBox("Connect to SQL Server first.", MsgBoxStyle.Information Or MsgBoxStyle.SystemModal)
             Return
         End If
-        Dim productFamily As String = _main.txtProductFamily.Text
+        Dim productFamily As String = _main.ProductFamilyText
         If productFamily = "" Then
             MsgBox("Select a Product Family first.", MsgBoxStyle.Information Or MsgBoxStyle.SystemModal)
             Return
@@ -63,7 +63,7 @@ Public Class frmFirmware
             Return
         End If
         Dim fileName As String = cboFirmware.SelectedItem.ToString()
-        Dim productFamily As String = _main.txtProductFamily.Text
+        Dim productFamily As String = _main.ProductFamilyText
         If MsgBox("Delete " & fileName & " (" & productFamily & ") from SQL?",
                   MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.SystemModal, "Confirm Delete") <> MsgBoxResult.Yes Then Return
         If SRFN.Communication.CommManager2.DeleteFirmwareFromSQL(productFamily, fileName) Then
@@ -88,7 +88,7 @@ Public Class frmFirmware
     End Sub
 
     Private Sub frmFirmware_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
-        _main.txtPassword.Text = ""
+        _main.PasswordText = ""
     End Sub
 
     Private Async Sub btnMassErase_Click(sender As Object, e As EventArgs) Handles btnMassErase.Click

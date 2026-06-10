@@ -534,9 +534,9 @@ FailTest:
             ds.ReadXml(Intxmlfile)
             '.....DLL Rev
             Return {
-            CStr(ds.Tables("DLLRevision").Rows(0).Item(0)).ToString, '..... connection string
-            CStr(ds.Tables("DLLRevision").Rows(0).Item(1)).ToString, '..... database
-            CStr(ds.Tables("DLLRevision").Rows(0).Item(2)).ToString} '..... source}
+            CStr(ds.Tables("DLLRevision").Rows(0).Item(0)).ToString,
+            CStr(ds.Tables("DLLRevision").Rows(0).Item(1)).ToString,
+            CStr(ds.Tables("DLLRevision").Rows(0).Item(2)).ToString}
             '    Return {str,dba,src}
         Catch ex As Exception
             MsgBox("Error CheckConn", MsgBoxStyle.OkOnly Or MsgBoxStyle.Information Or MsgBoxStyle.SystemModal)

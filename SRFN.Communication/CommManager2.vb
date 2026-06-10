@@ -313,11 +313,10 @@ Public Class CommManager2
 			Dim params1 = varParam1.Split(New Char() {","c}, StringSplitOptions.None) 'RemoveEmptyEntries)
 			Dim params2 = varParam2.Split(New Char() {","c}, StringSplitOptions.None) 'RemoveEmptyEntries)
 			If params2(2) = " " Then params2(2) = "0"
-			Dim paramDef = New With
-			{
+			Dim paramDef = New With {
 			.MeterSerialNumber = params1(0),
 			.MacAddress = params1(1),
-			.SQLName = "",'params1(2),
+			.SQLName = "",
 			.UtilitySerialNumber = params1(3),
 			.CustomerID = Trim(params2(0)),
 			.ProductFamily = params2(1),
@@ -1067,9 +1066,7 @@ Jump:
 	Public Property MeterSerialNumber As String
 	Public Property MacAddress As String
 	Public Property SqlName As String
-	Public Property DateFormatString As String = "MM/dd/yyyy HH
-    mm
-    ss"
+	Public Property DateFormatString As String = "MM/dd/yyyy HH:mm:ss"
 	Public Property BaudRateValues As List(Of String) = New List(Of String)() From {"2400", "4800", "9600", "38400", "57600", "115200"}
 	Public Property DataBitValues As List(Of String) = New List(Of String)() From {"7", "8", "9"}
 	Public ReadOnly Property Encoding() As Object
@@ -1186,8 +1183,7 @@ Jump:
 				'RaiseEvent StatusMessagePosted("Port closed at " & DateTime.Now.ToString(DateFormatString))
 			End If
 		Catch ex As Exception
-			RaiseEvent ErrorMessagePosted("Error
-     " & ex.Message & System.Environment.NewLine & "ClosePort()")
+			RaiseEvent ErrorMessagePosted("Error " & ex.Message & System.Environment.NewLine & "ClosePort()")
 		End Try
 	End Sub
 	Public Async Function WriteData(ByVal msg As String) As Task '.....updated1/4/2023, added delay till timeout >> msg|timeout
@@ -1250,8 +1246,7 @@ Jump:
 				'ComPort.DiscardInBuffer() 
 			End If
 		Catch ex As Exception
-			RaiseEvent ErrorMessagePosted("Error
-     " & ex.Message)
+			RaiseEvent ErrorMessagePosted("Error " & ex.Message)
 		End Try
 	End Sub
 	Private Sub ErrorReceived(ByVal sender As Object, ByVal e As SerialErrorReceivedEventArgs)

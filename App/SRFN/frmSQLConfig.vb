@@ -1,31 +1,30 @@
 Public Class frmSQLConfig
 
-    Private _main As Form1
+    Private _main As IMainForm
 
-    Public Sub New(mainForm As Form1)
+    Public Sub New(mainForm As IMainForm)
         InitializeComponent()
         _main = mainForm
     End Sub
 
     Private Sub frmSQLConfig_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        txtDLLRevision.Text = _main.DLL_Revision.Text
-        txtCustomerValues.Text = _main.SRFN_CustomerValues.Text
-        txtTestResults.Text = _main.SRFN_TestResults.Text
-        txtFirmware.Text = _main.Aclara_FirmwareConnStr
-        txtServer.Text = _main.txtSQLServer.Text
-        chkShowForm.Checked = _main.chkShowForm.Checked
-        txtRA6Path.Text = _main.RA6ProgPath.Text
+        txtDLLRevision.Text = _main.DLLRevisionText
+        txtCustomerValues.Text = _main.CustomerValuesText
+        txtTestResults.Text = _main.TestResultsText
+        txtFirmware.Text = _main.FirmwareConnStr
+        txtServer.Text = _main.SQLServerText
+        chkShowForm.Checked = _main.ShowFormChecked
+        txtRA6Path.Text = _main.RA6ProgPathText
     End Sub
 
     Private Sub CopyToMain()
-        _main.DLL_Revision.Text = txtDLLRevision.Text
-        _main.SRFN_CustomerValues.Text = txtCustomerValues.Text
-        _main.SRFN_TestResults.Text = txtTestResults.Text
-        _main.Aclara_FirmwareConnStr = txtFirmware.Text
-        _main.txtSQLServer.Text = txtServer.Text
-        _main.SQLServer = txtServer.Text
-        _main.chkShowForm.Checked = chkShowForm.Checked
-        _main.RA6ProgPath.Text = txtRA6Path.Text
+        _main.DLLRevisionText = txtDLLRevision.Text
+        _main.CustomerValuesText = txtCustomerValues.Text
+        _main.TestResultsText = txtTestResults.Text
+        _main.FirmwareConnStr = txtFirmware.Text
+        _main.SQLServerText = txtServer.Text
+        _main.ShowFormChecked = chkShowForm.Checked
+        _main.RA6ProgPathText = txtRA6Path.Text
         SRFN.Communication.CommManager2.CustomerValuesConnStr = txtCustomerValues.Text.Trim()
         SRFN.Communication.CommManager2.TestResultsConnStr = txtTestResults.Text.Trim()
         SRFN.Communication.CommManager2.DLLRevisionConnStr = txtDLLRevision.Text.Trim()
@@ -188,7 +187,7 @@ Public Class frmSQLConfig
         Dim current As String = txtRA6Path.Text.Trim()
         If current <> "" AndAlso IO.File.Exists(IO.Path.Combine(current, "rfp-cli.exe")) Then
             btnChkRA6Path.BackColor = Color.LightGreen
-            _main.RA6ProgPath.Text = current
+            _main.RA6ProgPathText = current
             Return
         End If
 
@@ -202,7 +201,7 @@ Public Class frmSQLConfig
                 If found.Length > 0 Then
                     txtRA6Path.Text = IO.Path.GetDirectoryName(found(0))
                     btnChkRA6Path.BackColor = Color.LightGreen
-                    _main.RA6ProgPath.Text = txtRA6Path.Text
+                    _main.RA6ProgPathText = txtRA6Path.Text
                     Save()
                     Return
                 End If
@@ -280,7 +279,7 @@ Public Class frmSQLConfig
     End Sub
 
     Private Sub Save()
-        _main.txtPassword.Text = ""
+        _main.PasswordText = ""
         CopyToMain()
 
         ' Save connection strings to ConnStr.txt
