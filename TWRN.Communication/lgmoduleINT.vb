@@ -35,6 +35,9 @@ Public Class lgmoduleINT
         End Get
     End Property
 #Region "Run Test"
+Public Async Function ReadTWACSID(CommPort As Integer) As Task(Of String)
+    Return Await Module1.ReadTWACSID(CommPort)
+End Function
 Public Async Function ACLARA_INTEGRATIONDotNetTest(ByVal nComPort As Integer, ByVal varParam1 As String, ByVal varParam2 As String) As Task(Of String)
         Try
             ' Reset test state for new test run

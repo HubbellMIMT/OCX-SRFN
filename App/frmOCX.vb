@@ -44,6 +44,7 @@ Public Class frmOCX
     Private WithEvents btnConnect As Button
     Private WithEvents txtPassword As TextBox
 
+    Private _lgmodule As New TWRN.Communication.TWRN.lgmoduleINT()
     Private _usbOn As Boolean = True
     Private _locked As Boolean = False
 
@@ -356,11 +357,11 @@ Public Class frmOCX
         Dim port As Integer = GetCommPortNumber()
         btnReadTWACS.Enabled = False
         txtResults.Text = "Reading TWACS ID on COM" & port & "..."
-        Dim result As String = Await ReadTWACSID(port)
+        Dim result As String = Await _lgmodule.ReadTWACSID(port)
         btnReadTWACS.Enabled = True
         If result <> "" AndAlso Not result.StartsWith("Error") Then
             txtTWACSAddress.Text = result
-            txtResults.Text = "TWACS ID: " & result & "  (hex: " & gReg24 & ")"
+            txtResults.Text = "TWACS ID: " & result
         ElseIf result.StartsWith("Error") Then
             txtResults.Text = result
         Else
