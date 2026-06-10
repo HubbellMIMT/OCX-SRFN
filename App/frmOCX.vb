@@ -43,12 +43,10 @@ Public Class frmOCX
     Private WithEvents btnLockForm As Button
     Private WithEvents btnSave As Button
     Private WithEvents txtSQLServer As TextBox
-    Private WithEvents btnConnect As Button
     Private WithEvents txtPassword As TextBox
     Private lblSetSQL As Label
 
     Private _lgmodule As New TWRN.Communication.TWRN.lgmoduleINT()
-    Private _usbOn As Boolean = True
     Private _locked As Boolean = False
     Private _adminMode As Boolean = False
     Private _frmCommPorts As frmCommPorts = Nothing
@@ -57,6 +55,7 @@ Public Class frmOCX
     Public Sub New()
         InitializeComponent()
         PopulateCommPorts()
+        LoadProductFamily()
         Text = "TWACS Integration Test"
     End Sub
 
@@ -102,7 +101,6 @@ Public Class frmOCX
         btnSave = New Button()
         Dim lblSQLLbl As New Label()
         txtSQLServer = New TextBox()
-        btnConnect = New Button()
         txtPassword = New TextBox()
         lblSetSQL = New Label()
         Dim lblCmd As New Label()
@@ -284,13 +282,7 @@ Public Class frmOCX
         txtSQLServer.Location = New Point(235, 57)
         txtSQLServer.Size = New Size(122, 20)
 
-        btnConnect.Location = New Point(496, 143)
-        btnConnect.Size = New Size(90, 23)
-        btnConnect.Text = "Set SQL"
-        btnConnect.BackColor = Color.LightCoral
-
         txtSQLServer.ReadOnly = True
-        txtProductFamily.Enabled = False
         txtFormID.Enabled = False
 
         Panel1.Controls.AddRange(New Control() {
@@ -303,7 +295,7 @@ Public Class frmOCX
             chkRDInstalled,
             lblPackPathLbl, txtPackPath,
             btnSendVarParam, btnLockForm, btnSave,
-            lblSQLLbl, txtSQLServer, btnConnect
+            lblSQLLbl, txtSQLServer
         })
 
         ' ── Form ─────────────────────────────────────────────────
@@ -350,6 +342,33 @@ Public Class frmOCX
             txtCommPort.SelectedIndex = 0
         End If
         UpdatePortLabel()
+    End Sub
+
+    Private Sub LoadProductFamily()
+        txtProductFamily.Items.Clear()
+        Dim xmlPath As String = IO.Path.Combine(Application.StartupPath, "FormList.xml")
+        If IO.File.Exists(xmlPath) Then
+            Try
+                Dim doc As New Xml.XmlDocument()
+                doc.Load(xmlPath)
+                For Each node As Xml.XmlNode In doc.DocumentElement.ChildNodes
+                    If node.NodeType = Xml.XmlNodeType.Element Then
+                        Dim name As String = node.Name.Replace("-RA6", "+c-RA6").Replace("SRFN-I-210C", "SRFN-I-210+c").Replace("AclaraRF3-I210C", "AclaraRF3-I210+c")
+                        If Not txtProductFamily.Items.Contains(name) Then
+                            txtProductFamily.Items.Add(name)
+                        End If
+                    End If
+                Next
+            Catch
+            End Try
+        End If
+        If txtProductFamily.Items.Count = 0 Then
+            txtProductFamily.Items.AddRange(New Object() {
+                "SRFN-I-210+", "SRFN-I-210+c", "SRFN-KV2c",
+                "SRFN-I-210+c-RA6", "AclaraRF3-I210+c", "AclaraRF3-KV2c", "SRFN-EV2C-RA6"
+            })
+        End If
+        If txtProductFamily.Items.Count > 0 Then txtProductFamily.SelectedIndex = 0
     End Sub
 
     Private Sub UpdatePortLabel()
@@ -411,8 +430,41 @@ Public Class frmOCX
         txtResults.Text = "Read Firmware: not yet implemented"
     End Sub
 
-    Private Sub btnVerifyComm_Click(sender As Object, e As EventArgs) Handles btnVerifyComm.Click
-        txtResults.Text = "Verify Comm: not yet implemented"
+    Private Async Sub btnVerifyComm_Click(sender As Object, e As EventArgs) Handles btnVerifyComm.Click
+        Dim port As Integer = GetCommPortNumber()
+        btnVerifyComm.Enabled = False
+        Try
+            If SRFN.Communication.CommManager2.RelayPort <> "" Then
+                txtResults.Text = "Verify Comm: setting USB relay to Closed..."
+                Me.Refresh()
+                SRFN.Communication.CommManager2.RelaySetAndGet(1, True)
+                btnToggleUSB.Text = If(SRFN.Communication.CommManager2.UsbIsOn, "USB ON", "USB OFF")
+                btnToggleUSB.BackColor = If(SRFN.Communication.CommManager2.UsbIsOn, Color.Green, Color.Yellow)
+                If Not SRFN.Communication.CommManager2.UsbIsOn Then
+                    txtResults.Text = "Verify Comm: USB relay could not be set to Closed"
+                    txtResults.BackColor = Color.Red
+                    Return
+                End If
+                Await Task.Delay(500)
+            End If
+            txtResults.BackColor = Color.Yellow
+            txtResults.Text = "Verify Comm: reading TWACS ID on COM" & port & "..."
+            Me.Refresh()
+            Dim result As String = Await _lgmodule.ReadTWACSID(port)
+            If result <> "" AndAlso Not result.StartsWith("Error") Then
+                txtTWACSAddress.Text = result
+                txtResults.BackColor = Color.LightGreen
+                txtResults.Text = "TWACS Communication Successful — ID: " & result
+            Else
+                txtResults.BackColor = Color.Red
+                txtResults.Text = "Verify Comm Failed — " & If(result = "", "no response from COM" & port, result)
+            End If
+        Catch ex As Exception
+            txtResults.BackColor = Color.Red
+            txtResults.Text = "Verify Comm error: " & ex.Message
+        Finally
+            btnVerifyComm.Enabled = True
+        End Try
     End Sub
 
     Private Sub btnChkPort_Click(sender As Object, e As EventArgs) Handles btnChkPort.Click
@@ -430,9 +482,27 @@ Public Class frmOCX
     End Sub
 
     Private Sub btnToggleUSB_Click(sender As Object, e As EventArgs) Handles btnToggleUSB.Click
-        _usbOn = Not _usbOn
-        btnToggleUSB.Text = If(_usbOn, "USB OFF", "USB ON")
-        txtResults.Text = "USB toggle: not yet implemented"
+        Dim portNum As String = SRFN.Communication.CommManager2.RelayPort.Trim()
+        If portNum = "" Then
+            txtResults.Text = "USB Relay: no Relay Port selected — set it via Configure > Comm Ports"
+            txtResults.BackColor = Color.Red
+            Return
+        End If
+        Try
+            Dim state As String = SRFN.Communication.CommManager2.RelaySetAndGet(1, Not SRFN.Communication.CommManager2.UsbIsOn)
+            If state IsNot Nothing Then
+                txtResults.Text = "Relay State: " & If(SRFN.Communication.CommManager2.UsbIsOn, "ON (Closed)", "OFF (Open)") & " (verified)"
+                txtResults.BackColor = If(SRFN.Communication.CommManager2.UsbIsOn, Color.LightGreen, Color.Yellow)
+                btnToggleUSB.Text = If(SRFN.Communication.CommManager2.UsbIsOn, "USB ON", "USB OFF")
+                btnToggleUSB.BackColor = If(SRFN.Communication.CommManager2.UsbIsOn, Color.Green, Color.Yellow)
+            Else
+                txtResults.Text = "USB Relay: state unknown after command"
+                txtResults.BackColor = Color.Yellow
+            End If
+        Catch ex As Exception
+            txtResults.Text = "USB Relay error: " & ex.Message
+            txtResults.BackColor = Color.Red
+        End Try
     End Sub
 
     Private Sub btnResetRelease_Click(sender As Object, e As EventArgs) Handles btnResetRelease.Click
@@ -480,43 +550,11 @@ Public Class frmOCX
         End If
     End Sub
 
-    Private Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
-        If _adminMode Then
-            Dim pw As String = InputBox("Enter RA66 to lock admin, or leave blank to configure SQL:", "Set SQL", "")
-            If pw.ToUpper() = "RA66" Then
-                SetAdminMode(False)
-                txtResults.Text = "Admin mode locked."
-            ElseIf pw <> "" Then
-                Dim server As String = InputBox("Enter SQL Server name:", "Set SQL Server", txtSQLServer.Text)
-                If server <> "" Then
-                    txtSQLServer.Text = server
-                    txtResults.Text = "SQL Server set to: " & server
-                End If
-            End If
-        Else
-            Dim pw As String = InputBox("Enter admin password:", "Set SQL — Admin Required", "")
-            If pw.ToUpper() = "RA66" Then
-                SetAdminMode(True)
-                Dim server As String = InputBox("Enter SQL Server name:", "Set SQL Server", txtSQLServer.Text)
-                If server <> "" Then
-                    txtSQLServer.Text = server
-                    txtResults.Text = "SQL Server set to: " & server & "  [admin unlocked]"
-                Else
-                    txtResults.Text = "Admin unlocked — config accessible."
-                End If
-            ElseIf pw <> "" Then
-                MsgBox("Invalid password.", MsgBoxStyle.OkOnly Or MsgBoxStyle.Exclamation, "Set SQL")
-            End If
-        End If
-    End Sub
 
     Private Sub SetAdminMode(enabled As Boolean)
         _adminMode = enabled
         txtSQLServer.ReadOnly = Not enabled
-        txtProductFamily.Enabled = enabled
         txtFormID.Enabled = enabled
-        btnConnect.BackColor = If(enabled, Color.LightGreen, Color.LightCoral)
-        btnConnect.Text = If(enabled, "Set SQL ●", "Set SQL")
     End Sub
 
     Private Sub txtProductFamily_SelectedIndexChanged(sender As Object, e As EventArgs) Handles txtProductFamily.SelectedIndexChanged
@@ -611,9 +649,10 @@ Public Class frmOCX
     End Property
     Public Property RelayPortText As String Implements IMainForm.RelayPortText
         Get
-            Return ""
+            Return SRFN.Communication.CommManager2.RelayPort
         End Get
         Set(v As String)
+            SRFN.Communication.CommManager2.RelayPort = v
         End Set
     End Property
     Public Sub ShowPorts() Implements IMainForm.ShowPorts
