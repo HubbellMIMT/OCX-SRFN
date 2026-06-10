@@ -1993,6 +1993,15 @@ Private Async Function ToggleUSB(ByVal msg As String) As Task
 			txtRelayPort.Text = v
 		End Set
 	End Property
+	Private _opticalPort As String = ""
+	Public Property OpticalPortText As String Implements IMainForm.OpticalPortText
+		Get
+			Return _opticalPort
+		End Get
+		Set(v As String)
+			_opticalPort = v
+		End Set
+	End Property
 	Public Property ProductFamilyText As String Implements IMainForm.ProductFamilyText
 		Get
 			Return txtProductFamily.Text

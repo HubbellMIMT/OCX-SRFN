@@ -50,6 +50,7 @@ Public Class frmOCX
     Private _locked As Boolean = False
     Private _adminMode As Boolean = False
     Private _frmCommPorts As frmCommPorts = Nothing
+    Private _opticalPort As String = ""
 
     ' ── constructor ──────────────────────────────────────────────
     Public Sub New()
@@ -328,7 +329,6 @@ Public Class frmOCX
     Private Sub PopulateCommPorts()
         Dim current As String = If(txtCommPort.Text, "")
         txtCommPort.Items.Clear()
-        txtCommPort.Items.Add("Optical")
         For Each port As String In SerialPort.GetPortNames()
             txtCommPort.Items.Add(port.Replace("COM", "").Replace("com", ""))
         Next
@@ -358,8 +358,6 @@ Public Class frmOCX
         Dim sel As String = txtCommPort.Text
         If sel = "" Then
             lblPortStatus.Text = "Port: --"
-        ElseIf sel = "Optical" Then
-            lblPortStatus.Text = "Port: Optical"
         Else
             lblPortStatus.Text = "Port: COM" & sel
         End If
@@ -372,7 +370,7 @@ Public Class frmOCX
     End Function
 
     Private Function IsOptical() As Boolean
-        Return txtCommPort.Text = "Optical"
+        Return _opticalPort <> ""
     End Function
 
     ' ── menu handlers ────────────────────────────────────────────
@@ -647,6 +645,14 @@ Public Class frmOCX
         End Get
         Set(v As String)
             SRFN.Communication.CommManager2.RelayPort = v
+        End Set
+    End Property
+    Public Property OpticalPortText As String Implements IMainForm.OpticalPortText
+        Get
+            Return _opticalPort
+        End Get
+        Set(v As String)
+            _opticalPort = v
         End Set
     End Property
     Public Sub ShowPorts() Implements IMainForm.ShowPorts

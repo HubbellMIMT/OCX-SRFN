@@ -23,6 +23,8 @@ Partial Class frmCommPorts
         Me.cboDebugPort = New System.Windows.Forms.ComboBox()
         Me.lblRelayPort = New System.Windows.Forms.Label()
         Me.cboRelayPort = New System.Windows.Forms.ComboBox()
+        Me.lblOpticalPort = New System.Windows.Forms.Label()
+        Me.cboOpticalPort = New System.Windows.Forms.ComboBox()
         Me.btnUpdate = New System.Windows.Forms.Button()
         Me.btnApply = New System.Windows.Forms.Button()
         Me.btnClose = New System.Windows.Forms.Button()
@@ -70,61 +72,76 @@ Partial Class frmCommPorts
         Me.cboRelayPort.Size = New System.Drawing.Size(60, 21)
         Me.cboRelayPort.TabIndex = 2
         '
+        'lblOpticalPort
+        '
+        Me.lblOpticalPort.AutoSize = True
+        Me.lblOpticalPort.Location = New System.Drawing.Point(12, 105)
+        Me.lblOpticalPort.Text = "Optical USB Port"
+        '
+        'cboOpticalPort
+        '
+        Me.cboOpticalPort.FormattingEnabled = True
+        Me.cboOpticalPort.Location = New System.Drawing.Point(110, 102)
+        Me.cboOpticalPort.Size = New System.Drawing.Size(60, 21)
+        Me.cboOpticalPort.TabIndex = 3
+        '
         'btnUpdate
         '
-        Me.btnUpdate.Location = New System.Drawing.Point(12, 108)
+        Me.btnUpdate.Location = New System.Drawing.Point(12, 138)
         Me.btnUpdate.Size = New System.Drawing.Size(80, 25)
-        Me.btnUpdate.TabIndex = 3
+        Me.btnUpdate.TabIndex = 4
         Me.btnUpdate.Text = "Update Ports"
         Me.btnUpdate.UseVisualStyleBackColor = True
         '
         'btnApply
         '
-        Me.btnApply.Location = New System.Drawing.Point(100, 108)
+        Me.btnApply.Location = New System.Drawing.Point(100, 138)
         Me.btnApply.Size = New System.Drawing.Size(60, 25)
-        Me.btnApply.TabIndex = 4
+        Me.btnApply.TabIndex = 5
         Me.btnApply.Text = "Apply"
         Me.btnApply.UseVisualStyleBackColor = True
         '
         'btnClose
         '
-        Me.btnClose.Location = New System.Drawing.Point(168, 108)
+        Me.btnClose.Location = New System.Drawing.Point(168, 138)
         Me.btnClose.Size = New System.Drawing.Size(60, 25)
-        Me.btnClose.TabIndex = 5
+        Me.btnClose.TabIndex = 6
         Me.btnClose.Text = "Close"
         Me.btnClose.UseVisualStyleBackColor = True
         '
         'btnDiscover
         '
-        Me.btnDiscover.Location = New System.Drawing.Point(12, 143)
+        Me.btnDiscover.Location = New System.Drawing.Point(12, 173)
         Me.btnDiscover.Size = New System.Drawing.Size(95, 25)
-        Me.btnDiscover.TabIndex = 6
+        Me.btnDiscover.TabIndex = 7
         Me.btnDiscover.Text = "Discover Port"
         Me.btnDiscover.UseVisualStyleBackColor = True
         '
         'lblDiscoverStatus
         '
         Me.lblDiscoverStatus.AutoSize = True
-        Me.lblDiscoverStatus.Location = New System.Drawing.Point(115, 149)
+        Me.lblDiscoverStatus.Location = New System.Drawing.Point(115, 179)
         Me.lblDiscoverStatus.Text = ""
         '
         'chkDebugWindow
         '
         Me.chkDebugWindow.AutoSize = True
-        Me.chkDebugWindow.Location = New System.Drawing.Point(12, 178)
-        Me.chkDebugWindow.TabIndex = 7
+        Me.chkDebugWindow.Location = New System.Drawing.Point(12, 208)
+        Me.chkDebugWindow.TabIndex = 8
         Me.chkDebugWindow.Text = "Debug Window"
         Me.chkDebugWindow.UseVisualStyleBackColor = True
         '
         'frmCommPorts
         '
-        Me.ClientSize = New System.Drawing.Size(240, 205)
+        Me.ClientSize = New System.Drawing.Size(240, 235)
         Me.Controls.Add(Me.lblCommPort)
         Me.Controls.Add(Me.cboCommPort)
         Me.Controls.Add(Me.lblDebugPort)
         Me.Controls.Add(Me.cboDebugPort)
         Me.Controls.Add(Me.lblRelayPort)
         Me.Controls.Add(Me.cboRelayPort)
+        Me.Controls.Add(Me.lblOpticalPort)
+        Me.Controls.Add(Me.cboOpticalPort)
         Me.Controls.Add(Me.btnUpdate)
         Me.Controls.Add(Me.btnApply)
         Me.Controls.Add(Me.btnClose)
@@ -146,6 +163,8 @@ Partial Class frmCommPorts
     Friend WithEvents cboDebugPort As ComboBox
     Friend WithEvents lblRelayPort As Label
     Friend WithEvents cboRelayPort As ComboBox
+    Friend WithEvents lblOpticalPort As Label
+    Friend WithEvents cboOpticalPort As ComboBox
     Friend WithEvents btnUpdate As Button
     Friend WithEvents btnApply As Button
     Friend WithEvents btnClose As Button

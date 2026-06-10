@@ -18,15 +18,18 @@ Public Class frmCommPorts
         cboCommPort.Items.Clear()
         cboDebugPort.Items.Clear()
         cboRelayPort.Items.Clear()
+        cboOpticalPort.Items.Clear()
         For Each sp As String In My.Computer.Ports.SerialPortNames
             Dim portNum As String = sp.Replace("COM", "")
             cboCommPort.Items.Add(portNum)
             cboDebugPort.Items.Add(portNum)
             cboRelayPort.Items.Add(portNum)
+            cboOpticalPort.Items.Add(portNum)
         Next
         cboCommPort.Text = _main.CommPortText
         cboDebugPort.Text = _main.DebugPortText
         cboRelayPort.Text = _main.RelayPortText
+        cboOpticalPort.Text = _main.OpticalPortText
     End Sub
 
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
@@ -37,10 +40,12 @@ Public Class frmCommPorts
         Dim comm As String = cboCommPort.Text
         Dim debug As String = cboDebugPort.Text
         Dim relay As String = cboRelayPort.Text
+        Dim optical As String = cboOpticalPort.Text
         _main.ShowPorts()
         _main.CommPortText = comm
         _main.DebugPortText = debug
         _main.RelayPortText = relay
+        _main.OpticalPortText = optical
         _main.SetFormXml()
         _main.UpdatePortStatus()
         Me.Close()
@@ -107,6 +112,9 @@ Public Class frmCommPorts
             Case "Relay"
                 If Not cboRelayPort.Items.Contains(portNum) Then cboRelayPort.Items.Add(portNum)
                 cboRelayPort.Text = portNum
+            Case "Optical"
+                If Not cboOpticalPort.Items.Contains(portNum) Then cboOpticalPort.Items.Add(portNum)
+                cboOpticalPort.Text = portNum
         End Select
         lblDiscoverStatus.Text = If(selected = "", "", portName & " assigned")
         btnDiscover.Enabled = True
@@ -143,9 +151,15 @@ Public Class frmCommPorts
         rbRelay.Location = New System.Drawing.Point(20, 90)
         f.Controls.Add(rbRelay)
 
+        Dim rbOptical As New RadioButton()
+        rbOptical.Text = "Optical USB Port"
+        rbOptical.Location = New System.Drawing.Point(20, 115)
+        f.Controls.Add(rbOptical)
+
+        f.ClientSize = New System.Drawing.Size(210, 195)
         Dim btnAssign As New Button()
         btnAssign.Text = "Assign"
-        btnAssign.Location = New System.Drawing.Point(55, 128)
+        btnAssign.Location = New System.Drawing.Point(55, 158)
         btnAssign.Size = New System.Drawing.Size(75, 25)
         btnAssign.DialogResult = DialogResult.OK
         f.Controls.Add(btnAssign)
@@ -153,7 +167,7 @@ Public Class frmCommPorts
 
         Dim btnCancel As New Button()
         btnCancel.Text = "Cancel"
-        btnCancel.Location = New System.Drawing.Point(138, 128)
+        btnCancel.Location = New System.Drawing.Point(138, 158)
         btnCancel.Size = New System.Drawing.Size(60, 25)
         btnCancel.DialogResult = DialogResult.Cancel
         f.Controls.Add(btnCancel)
@@ -163,6 +177,7 @@ Public Class frmCommPorts
             If rbMfg.Checked Then Return "Mfg"
             If rbDebug.Checked Then Return "Debug"
             If rbRelay.Checked Then Return "Relay"
+            If rbOptical.Checked Then Return "Optical"
         End If
         Return ""
     End Function

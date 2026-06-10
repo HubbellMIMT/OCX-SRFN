@@ -13,6 +13,7 @@ Public Interface IMainForm
     Property CommPortText As String
     Property DebugPortText As String
     Property RelayPortText As String
+    Property OpticalPortText As String
     Sub ShowPorts()
     Sub SetFormXml()
     Sub UpdatePortStatus()
