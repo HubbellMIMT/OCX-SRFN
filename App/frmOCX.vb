@@ -347,11 +347,30 @@ Public Class frmOCX
 
     Private Sub LoadProductFamily()
         txtProductFamily.Items.Clear()
-        txtProductFamily.Items.AddRange(New Object() {
-            "SRFN-I-210+", "SRFN-I-210+c", "SRFN-KV2c",
-            "SRFN-I-210+c-RA6", "AclaraRF3-I210+c", "AclaraRF3-KV2c", "SRFN-EV2C-RA6"
-        })
-        txtProductFamily.SelectedIndex = 0
+        Dim xmlPath As String = IO.Path.Combine(Application.StartupPath, "Aclara_TestParameters", "SetIntegrationParameters.xml")
+        If IO.File.Exists(xmlPath) Then
+            Try
+                Dim ds As New System.Data.DataSet()
+                ds.ReadXml(xmlPath)
+                Dim tbl As System.Data.DataTable = ds.Tables("Table")
+                If tbl IsNot Nothing Then
+                    For Each row As System.Data.DataRow In tbl.Rows
+                        Dim name As String = row.Item("Productname").ToString().Trim()
+                        If name <> "" AndAlso Not txtProductFamily.Items.Contains(name) Then
+                            txtProductFamily.Items.Add(name)
+                        End If
+                    Next
+                End If
+            Catch
+            End Try
+        End If
+        If txtProductFamily.Items.Count = 0 Then
+            txtProductFamily.Items.AddRange(New Object() {
+                "UMT-C-KV2", "UMT-C-KV2_Gen5", "UMTR-G2",
+                "UMT-GCB", "UMT-GCB10_6.xx", "UMT-GCB12_6.xx"
+            })
+        End If
+        If txtProductFamily.Items.Count > 0 Then txtProductFamily.SelectedIndex = 0
     End Sub
 
     Private Sub UpdatePortLabel()
